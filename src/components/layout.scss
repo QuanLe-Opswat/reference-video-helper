@@ -1,0 +1,27 @@
+.layout {
+  .layoutBody {
+    margin: 0 auto;
+    max-width: 1000px;
+    padding: 0 1.0875rem 1.45rem
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .toolbar {
+    margin: 12px 0;
+
+    &.isHideNav {
+      display: none;
+    }
+  }
+
+  a {
+    margin-right: 6px;
+  }
+
+  .active {
+    color: red;
+  }
+}

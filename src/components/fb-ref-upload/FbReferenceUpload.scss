@@ -1,0 +1,53 @@
+@import "../../style/color";
+
+.fbReferenceUpload {
+  margin-top: 20px;
+
+  .configContainer {
+    margin-bottom: 20px;
+  }
+
+  .configFileName {
+    color: $sasquatchSocks;
+    margin-top: 10px;
+    font-weight: 500;
+    font-size: 16px;
+
+  }
+
+  .uploadFileInfo {
+    margin-top: 10px;
+    font-weight: 500;
+    font-size: 16px;
+
+    > b {
+      color: $sasquatchSocks;
+    }
+  }
+
+  .fbBtnContainer {
+    margin-bottom: 12px;
+
+    .kep-login-facebook {
+      padding: 4px !important;
+      font-size: 14px !important;
+      border-radius: 2px !important;
+      font-weight: 500 !important;
+    }
+  }
+
+  .leftPanel {
+    border-right: $coldGreyLight solid thin;
+  }
+
+  .controlPanel {
+    margin-left: 20px;
+  }
+
+  .pageName{
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 10px;
+    color: $coldGrey;
+  }
+}
