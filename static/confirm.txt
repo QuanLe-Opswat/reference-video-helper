@@ -1,0 +1,16 @@
+We develop this website just for internal use.
+We are currently manage a entertainment page at https://www.facebook.com/chinhphuchoanmy/
+We have a lot of video upload on Youtube and Facebook also.
+So we want to manage our video right on Facebook.
+
+To do that we should upload one by one video on FB Creator site in "Right Manager" => "Reference Library", it take a lot of time, because we can't upload bulk of videos at a time.
+We develop that web application to help us save the uploading time.
+
+To use this page:
+1. Login our FB account that has right to access our FB Page.
+2. Selects videos we want to upload in Right Manager
+3. Upload configure file, that content how these videos are setting when upload to Right Manager (Rule, name,…)
+4. Click "Start Upload" to begin (still under-developing due to waiting this App Review)
+
+To upload video to Right Manager with reference_only: we need
+publish_pages and manage_pages permissions.
