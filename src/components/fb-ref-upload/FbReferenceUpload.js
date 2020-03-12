@@ -5,6 +5,7 @@ import FacebookLogin from 'react-facebook-login';
 import FbApi from '../../service/FbApi';
 
 import './FbReferenceUpload.scss';
+import LoadingComponent from '../../ui/loading/LoadingComponent';
 
 const FbReferenceUpload = () => {
 
@@ -15,6 +16,8 @@ const FbReferenceUpload = () => {
   const [filesUpload, setFilesUpload] = useState([]);
 
   const [pageData, setPageData] = useState(undefined);
+
+  const [startUploading, setStartUploading] = useState(false);
 
   const onConfigChange = (e) => {
     setFileConfig(e.target.files[0]);
@@ -31,13 +34,14 @@ const FbReferenceUpload = () => {
 
   const onStartClick = async () => {
     // console.log(filesUpload);
-    await FbReferenceService.startUpload(fileConfig, filesUpload);
+    // await FbReferenceService.startUpload(fileConfig, filesUpload);
+    setStartUploading(true);
   };
 
   let fbApi = undefined;
   const responseFacebook = async (response) => {
-    if (response && response.name && response.email && response.accessToken) {
-      console.log(response);
+    console.log(response);
+    if (response && response.name && response.accessToken) {
       fbApi = new FbApi(response);
       const pageData = await fbApi.getPageInfo();
       setPageData(pageData);
@@ -62,6 +66,19 @@ const FbReferenceUpload = () => {
         </div>),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [pageData]);
+
+  const startDOM = useMemo(() => {
+      if (!startUploading) {
+        return <Button size='sm' variant='outline-primary'
+                       onClick={onStartClick}
+                       disabled={!(fileConfig && filesUpload && filesUpload.length > 0)}>
+          Start Upload
+        </Button>;
+      }
+
+      return <LoadingComponent/>;
+    },
+    [startUploading, fileConfig, filesUpload]);
 
   return <div className='fbReferenceUpload'>
     <Row>
@@ -112,11 +129,7 @@ const FbReferenceUpload = () => {
               <div className='fbBtnContainer'>
                 {fbDOM}
               </div>
-              <Button size='sm' variant='outline-primary'
-                      onClick={onStartClick}
-                      disabled={!(fileConfig && filesUpload && filesUpload.length > 0)}>
-                Start Upload
-              </Button>
+              {startDOM}
             </div>
           </div>
         </Row>
