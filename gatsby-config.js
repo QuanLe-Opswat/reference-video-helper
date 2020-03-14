@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `Facebook Helper`,
+    title: `Videos Upload Helper`,
     description: `A website help ypu upload videos to fb reference library`,
     author: `@Quan.le`,
   },

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Col, Row, Button } from 'react-bootstrap';
 import FbReferenceService from '../../service/FbReferenceService';
 import FacebookLogin from 'react-facebook-login';
@@ -16,6 +16,7 @@ const FbReferenceUpload = () => {
   const [filesUpload, setFilesUpload] = useState([]);
 
   const [pageData, setPageData] = useState(undefined);
+  const [fbApi, setFbApi] = useState(undefined);
 
   const [startUploading, setStartUploading] = useState(false);
 
@@ -32,27 +33,36 @@ const FbReferenceUpload = () => {
     setFilesUpload(files);
   };
 
-  const onStartClick = async () => {
-    // console.log(filesUpload);
-    // await FbReferenceService.startUpload(fileConfig, filesUpload);
-    setStartUploading(true);
-  };
+  const onStartClick = useMemo(() => {
+    return (async () => {
+      // console.log(filesUpload);
+      // setStartUploading(true);
+      await FbReferenceService.startUpload(fileConfig, filesUpload, pageData, fbApi);
+    });
+  }, [fileConfig, filesUpload, pageData, fbApi]);
 
-  let fbApi = undefined;
   const responseFacebook = async (response) => {
     console.log(response);
     if (response && response.name && response.accessToken) {
-      fbApi = new FbApi(response);
-      const pageData = await fbApi.getPageInfo();
-      setPageData(pageData);
-      console.log(pageData);
+      setFbApi(new FbApi(response));
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      if (fbApi && !pageData) {
+        const pageData = await fbApi.getPageInfo();
+        setPageData(pageData);
+        console.log(pageData);
+      }
+    })();
+  }, [fbApi, pageData]);
 
   const fbDOM = useMemo(() =>
       (!pageData ?
         <FacebookLogin
           appId="214048743043727"
+          // appId="251636472667546"
           fields="name,email,picture,permissions"
           scope="public_profile,pages_show_list,publish_pages,manage_pages"
           manage_pages
@@ -78,61 +88,43 @@ const FbReferenceUpload = () => {
 
       return <LoadingComponent/>;
     },
-    [startUploading, fileConfig, filesUpload]);
+    [startUploading, fileConfig, filesUpload, onStartClick]);
 
   return <div className='fbReferenceUpload'>
     <Row>
-      <Col lg={3} className='leftPanel'>
+      <Col md={3} className='leftPanel'>
+        <Row>
+          <div className='fbBtnContainer'>
+            {fbDOM}
+          </div>
+        </Row>
         <Row className='configContainer'>
           <div>
-            <h5>
-              File Configurator
-            </h5>
             <input type='file' accept='.csv' ref={configRef} onChange={onConfigChange} style={{ display: 'none' }}/>
             <div>
               <Button size='sm' variant='outline-primary' onClick={() => configRef.current.click()}>
-                Select Config file (*.csv)
+                {fileConfig ?  fileConfig.name : 'Select Config file (*.csv)'}
               </Button>
-              <p className='configFileName'>
-                {fileConfig && fileConfig.name}
-              </p>
             </div>
-            <small>... download template here!!!</small>
+            <small>Download template <a href='/templateFbReference.csv' target='_blank'>HERE</a>!!!</small>
           </div>
         </Row>
         <Row>
           <div>
-            <h5>
-              File Upload
-            </h5>
             <input style={{ display: 'none' }} type='file' ref={filesRef} multiple onChange={onFilesChange}
                    accept='video/*'
             />
             <div>
               <Button size='sm' variant='outline-primary' onClick={() => filesRef.current.click()}>
-                Select Files
+                {filesUpload.length > 0 ? `Selected: ${filesUpload.length} files` : 'Select Video Files'}
               </Button>
-              <p className='uploadFileInfo'>
-                Upload files: <b>{filesUpload.length}</b>
-              </p>
             </div>
           </div>
         </Row>
       </Col>
-      <Col lg={9} className='rightPanel'>
-        <Row>
-          <div className='controlPanel'>
-            <h5>
-              Control Panel
-            </h5>
-            <div>
-              <div className='fbBtnContainer'>
-                {fbDOM}
-              </div>
-              {startDOM}
-            </div>
-          </div>
-        </Row>
+      <Col md={9} className='rightPanel'>
+        {startDOM}
+
       </Col>
     </Row>
 
