@@ -1,0 +1,55 @@
+@import "../../style/color";
+
+.uploadSummary {
+  display: inline-block;
+  margin-right: 5px;
+  margin-bottom: 15px;
+  width: 400px;
+
+  i {
+    color: $coldGrey;
+    font-size: 17px;
+    margin-right: 12px;
+  }
+
+  .card-body {
+    padding: 0;
+
+    .col-4 {
+      font-weight: 500;
+      color: $biscay;
+      padding: 5px 5px 5px 15px;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border-right: $coldGreyLightDeep 1px solid;
+
+      div {
+        margin-top: 5px;
+      }
+
+      button {
+        width: 75%;
+      }
+    }
+
+
+    .row {
+      border-bottom: $coldGreyLightDeep 1px solid;
+      margin: 0 0 -1px;
+    }
+
+    .done {
+      color: $vitalize;
+    }
+
+    .fail {
+      color: $cruelRuby;
+    }
+
+    .running {
+      color: $azure;
+    }
+  }
+}

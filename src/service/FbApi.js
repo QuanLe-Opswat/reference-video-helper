@@ -52,16 +52,44 @@ class FbApi {
     return instance.post(url, bodyFormData, config);
   }
 
-  async getPageInfo() {
-    let response = await this.get({ id: this.fbLoginResponse.id, fields: ['data'], edge: 'accounts' });
+  async getPagesInfo() {
+    const response = await this.get({ id: this.fbLoginResponse.id, fields: ['data'], edge: 'accounts' });
     if (response && response.data && response.data.data && response.data.data.length > 0) {
       // Get page detail
-      const pageId = response.data.data[0].id;
-      response = await this.get({ id: pageId, fields: ['id,name,picture,access_token'] });
-      if (response && response.data) {
-        return response.data;
-      }
+      return await Promise.all(response.data.data.map(async (page) => {
+        const pageId = page.id;
+        const res = await this.get({ id: pageId, fields: ['id,name,picture,access_token'] });
+        if (res && res.data) {
+          return res.data;
+        }
+      }));
     }
+  }
+
+  async getPageRules(page) {
+    const id = page.id;
+    const access_token = page.access_token;
+    const response = await this.get({ id, fields: ['name', 'id'], edge: 'video_copyright_rules', access_token });
+    return response.data.data;
+  }
+
+  async getPageCopyright(page) {
+    const id = page.id;
+    const access_token = page.access_token;
+    const limit = 25;
+    let after = undefined;
+    let data = [];
+    do {
+      let params = { limit };
+      if (after) {
+        params = { ...params, after };
+      }
+      const response = await this.get({ id, fields: ['id', 'reference_file'], edge: 'video_copyrights', access_token, params });
+      data = [...data, ...response.data.data];
+      after = response.data.paging && response.data.paging.next ? response.data.paging.cursors.after : undefined;
+    } while (after);
+
+    return data;
   }
 
   async initialUploadVideo({ pageId, token, fileSize }) {

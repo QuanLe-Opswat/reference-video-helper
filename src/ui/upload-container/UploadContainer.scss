@@ -1,0 +1,21 @@
+@import "../../style/color";
+
+.uploadContainer{
+  ul{
+    margin-left: 0;
+  }
+
+  li{
+    list-style: none;
+
+    &:nth-child(even){
+      .fileUpload .card{
+        background: $gruyereCheese;
+      }
+    }
+  }
+
+  .controlContainer{
+    margin-bottom: 20px;
+  }
+}

@@ -1,0 +1,40 @@
+@import "../../style/color";
+
+.configComponent {
+  width: 100%;
+
+  .typeContainer {
+    display: flex;
+
+    select {
+      &.type {
+        max-width: 150px;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+
+  border-top: $coldGreyLight thin solid;
+  padding-top: 10px;
+
+  border-bottom: $coldGreyLight thin solid;
+  padding-bottom: 10px;
+
+  .fas {
+    color: $vividCerulean;
+    margin-top: 7px;
+    margin-left: 5px;
+  }
+
+  .__react_component_tooltip {
+    hr {
+      margin: 2px;
+      border-color: $coldGreyLight;
+    }
+  }
+
+  .rule {
+    margin-right: 5px;
+  }
+}
