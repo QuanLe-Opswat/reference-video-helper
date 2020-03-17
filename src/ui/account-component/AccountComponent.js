@@ -90,8 +90,9 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
           return <span>Loading... Please wait!</span>;
         }
 
-        return <Button className='loginBtn' variant='primary' onClick={loginClick}><i className='fab fa-facebook'/> Login
-          to Facebook</Button>;
+        return <Button className='loginBtn' variant='primary' onClick={loginClick} disabled={disabled}>
+          <i className='fab fa-facebook'/> Login to Facebook
+        </Button>;
       }
 
       if (pagesData) {
@@ -108,7 +109,9 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
 
         return <>
           {pages}
-          <Button className='logoutBtn' variant='outline-danger' size='sm' onClick={logoutClick}>Sign out</Button>
+          <Button className='logoutBtn' variant='outline-danger' size='sm' onClick={logoutClick} disabled={disabled}>
+            Sign out
+          </Button>
         </>;
       }
     },
