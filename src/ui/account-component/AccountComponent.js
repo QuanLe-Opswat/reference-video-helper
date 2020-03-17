@@ -116,7 +116,7 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fbApi, pagesData, selectedPage, fbLoaded]);
+    [fbApi, pagesData, selectedPage, fbLoaded, disabled]);
 
   return <div className='accountComponent'>
     {fbDOM}
