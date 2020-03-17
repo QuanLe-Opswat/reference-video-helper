@@ -1,24 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import FacebookLogin from 'react-facebook-login';
 import FbApi from '../../service/FbApi';
 import classnames from 'classnames';
 
 import './AccountComponent.scss';
 
 const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
+  const [fbLoaded, setFbLoaded] = useState(false);
+
   const [pagesData, setPagesData] = useState(undefined);
   const [fbApi, setFbApi] = useState(undefined);
 
   const [selectedPage, setSelectedPage] = useState(undefined);
-
-  const responseFacebook = async (response) => {
-    console.log(response);
-    if (response && response.name && response.accessToken) {
-      const api = new FbApi(response);
-      setFbApi(api);
-      onLogin(api);
-    }
-  };
 
   const onPageClick = (page) => {
     if (disabled) {
@@ -40,6 +32,30 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
     })();
   }, [fbApi, pagesData]);
 
+  const loginEvent = useMemo(() => () => {
+    const response = window.FB.getAuthResponse();
+    if (response && response.userID && response.accessToken) {
+      const api = new FbApi(response);
+      setFbApi(api);
+      onLogin(api);
+    }
+  }, [onLogin]);
+
+  const fbLoadedEvent = useMemo(() => () => {
+    setFbLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    // console.log('log:' + window.login_fb);
+    window.addEventListener('loginEvent', loginEvent);
+    window.addEventListener('loadFbEvent', fbLoadedEvent);
+
+    return function() {
+      window.removeEventListener('loginEvent', loginEvent);
+      window.removeEventListener('loadFbEvent', fbLoadedEvent);
+    };
+  }, [loginEvent, fbLoadedEvent]);
+
   useEffect(() => {
     if (onPageChange)
       onPageChange(selectedPage);
@@ -47,14 +63,16 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
 
   const fbDOM = useMemo(() => {
       if (!fbApi) {
-        return <FacebookLogin
-          appId="214048743043727"
-          fields="name,email,picture,permissions"
-          scope="public_profile,pages_show_list,publish_pages,manage_pages"
-          manage_pages
-          size='small'
-          icon="fa-facebook"
-          callback={responseFacebook}/>;
+
+        if (!fbLoaded) {
+          return <span>Loading... Please wait!</span>;
+        }
+
+        return <div className="fb-login-button" data-width="" data-size="large" data-button-type="login_with"
+                    data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"
+                    data-onlogin="onLogin()"
+                    data-scope="public_profile,pages_show_list,publish_pages,manage_pages"
+        />;
       }
 
       if (pagesData) {
@@ -63,7 +81,7 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
           /* eslint-disable jsx-a11y/click-events-have-key-events */
           /* eslint-disable jsx-a11y/no-static-element-interactions */
           return <div key={page.id} className={classes} onClick={() => onPageClick(page)}>
-            <img height={page.picture.data.height / 2} width={page.picture.data.width / 2} src={page.picture.data.url}
+            <img height={30} width={30} src={page.picture.data.url}
                  alt={page.name}/>
             <span className='pageName'>{page.name}</span>
           </div>;
@@ -71,7 +89,7 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [fbApi, pagesData, selectedPage]);
+    [fbApi, pagesData, selectedPage, fbLoaded]);
 
   return <div className='accountComponent'>
     {fbDOM}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from "react-helmet"
 import { Col, Row } from 'react-bootstrap';
 import ConfigComponent from '../../ui/config-component/ConfigComponent';
 import SelectFile from '../../ui/select-file/SelectFile';
@@ -27,6 +28,22 @@ const FbReferenceUpload = () => {
   };
 
   return <div className='fbReferenceUpload'>
+    <Helmet>
+      <script>
+        {`
+        function onLogin() {
+          window.dispatchEvent(window.loginEvent);
+        }
+        window.loginEvent = new Event("loginEvent");
+        function onFbApiLoaded() {
+          window.dispatchEvent(window.loadFbEvent);
+        }
+        window.loadFbEvent = new Event("loadFbEvent");`}
+      </script>
+      <script async defer crossOrigin="anonymous"
+              src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v6.0&appId=214048743043727&autoLogAppEvents=1"
+              onLoad="onFbApiLoaded()"/>
+    </Helmet>
     <Row>
       <Col md={3} className='leftPanel'>
         <Row>

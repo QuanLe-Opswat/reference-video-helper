@@ -13,8 +13,8 @@ class FbApi {
       baseURL: VIDEO_URL,
       timeout: 60000,
     });
-    this.fbLoginResponse = fbLoginResponse;
     this.accessToken = fbLoginResponse.accessToken;
+    this.userId = fbLoginResponse.userID;
   }
 
   buildUrlParams({ id, edge, params, fields, access_token }) {
@@ -53,7 +53,7 @@ class FbApi {
   }
 
   async getPagesInfo() {
-    const response = await this.get({ id: this.fbLoginResponse.id, fields: ['data'], edge: 'accounts' });
+    const response = await this.get({ id: this.userId, fields: ['data'], edge: 'accounts' });
     if (response && response.data && response.data.data && response.data.data.length > 0) {
       // Get page detail
       return await Promise.all(response.data.data.map(async (page) => {
