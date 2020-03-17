@@ -31,10 +31,6 @@ const FbReferenceUpload = () => {
     <Helmet>
       <script>
         {`
-        function onLogin() {
-          window.dispatchEvent(window.loginEvent);
-        }
-        window.loginEvent = new Event("loginEvent");
         function onFbApiLoaded() {
           window.dispatchEvent(window.loadFbEvent);
         }

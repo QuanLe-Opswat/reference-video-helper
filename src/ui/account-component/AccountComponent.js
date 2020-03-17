@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from 'react-bootstrap';
 import FbApi from '../../service/FbApi';
 import classnames from 'classnames';
 
 import './AccountComponent.scss';
+import '../../style/fa/all.min.css';
 
 const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
   const [fbLoaded, setFbLoaded] = useState(false);
@@ -46,37 +48,54 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
   }, []);
 
   useEffect(() => {
-    // console.log('log:' + window.login_fb);
-    window.addEventListener('loginEvent', loginEvent);
     window.addEventListener('loadFbEvent', fbLoadedEvent);
 
     return function() {
-      window.removeEventListener('loginEvent', loginEvent);
       window.removeEventListener('loadFbEvent', fbLoadedEvent);
     };
-  }, [loginEvent, fbLoadedEvent]);
+  }, [fbLoadedEvent]);
 
   useEffect(() => {
     if (onPageChange)
       onPageChange(selectedPage);
   }, [onPageChange, selectedPage]);
 
+  const loginClick = async () => {
+    const FB = window.FB;
+    const response = await new Promise(resolve => FB.getLoginStatus(r => resolve(r)));
+
+    if (response && response.status === 'connected') {
+      loginEvent();
+    } else {
+      FB.login((r) => {
+        if (r && r.status === 'connected') {
+          loginEvent();
+        }
+      }, { scope: 'public_profile,pages_show_list,publish_pages,manage_pages' });
+    }
+  };
+
+  const logoutClick = () => {
+    const FB = window.FB;
+    FB.logout(() => {
+      setFbApi(undefined);
+      setPagesData(undefined);
+      setSelectedPage(undefined);
+    });
+  };
+
   const fbDOM = useMemo(() => {
       if (!fbApi) {
-
         if (!fbLoaded) {
           return <span>Loading... Please wait!</span>;
         }
 
-        return <div className="fb-login-button" data-width="" data-size="large" data-button-type="login_with"
-                    data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"
-                    data-onlogin="onLogin()"
-                    data-scope="public_profile,pages_show_list,publish_pages,manage_pages"
-        />;
+        return <Button className='loginBtn' variant='primary' onClick={loginClick}><i className='fab fa-facebook'/> Login
+          to Facebook</Button>;
       }
 
       if (pagesData) {
-        return pagesData.map(page => {
+        const pages = pagesData.map(page => {
           const classes = classnames({ selected: selectedPage && page.id === selectedPage.id }, 'pageItem');
           /* eslint-disable jsx-a11y/click-events-have-key-events */
           /* eslint-disable jsx-a11y/no-static-element-interactions */
@@ -86,6 +105,11 @@ const AccountComponent = ({ onLogin, onPageChange, disabled }) => {
             <span className='pageName'>{page.name}</span>
           </div>;
         });
+
+        return <>
+          {pages}
+          <Button className='logoutBtn' variant='outline-danger' size='sm' onClick={logoutClick}>Sign out</Button>
+        </>;
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
